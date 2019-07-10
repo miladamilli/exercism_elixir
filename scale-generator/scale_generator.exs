@@ -49,19 +49,19 @@ defmodule ScaleGenerator do
 
   @spec chromatic_scale(tonic :: String.t()) :: list(String.t())
   def chromatic_scale(tonic \\ "C") do
-    _chromatic_scale(@scale, String.upcase(tonic), [])
+    do_chromatic_scale(@scale, String.upcase(tonic), [])
   end
 
-  defp _chromatic_scale([], _, _) do
+  defp do_chromatic_scale([], _, _) do
     []
   end
 
-  defp _chromatic_scale([note | rest], tonic, tail) when note == tonic do
+  defp do_chromatic_scale([note | rest], tonic, tail) when note == tonic do
     [note | rest] ++ Enum.reverse(tail) ++ [note]
   end
 
-  defp _chromatic_scale([note | rest], tonic, tail) do
-    _chromatic_scale(rest, tonic, [note | tail])
+  defp do_chromatic_scale([note | rest], tonic, tail) do
+    do_chromatic_scale(rest, tonic, [note | tail])
   end
 
   @doc """
@@ -81,7 +81,7 @@ defmodule ScaleGenerator do
 
   @spec flat_chromatic_scale(tonic :: String.t()) :: list(String.t())
   def flat_chromatic_scale(tonic \\ "C") do
-    _chromatic_scale(@flat_scale, tonic, [])
+    do_chromatic_scale(@flat_scale, tonic, [])
   end
 
   @doc """
@@ -119,19 +119,17 @@ defmodule ScaleGenerator do
   @spec scale(tonic :: String.t(), pattern :: String.t()) :: list(String.t())
   def scale(tonic, pattern) do
     scale = find_chromatic_scale(tonic)
-
     pattern = String.graphemes(pattern)
-    _scale(pattern, scale)
+    do_scale(pattern, scale)
   end
 
-  defp _scale([], [tone | _]) do
+  defp do_scale([], [tone | _]) do
     [tone]
   end
 
-  defp _scale([step | rest], [tone | scale]) do
+  defp do_scale([step | rest], [tone | scale]) do
     step = Map.get(@step, step)
     {scale_begin, scale_end} = Enum.split(scale, step - 1)
-
-    [tone | _scale(rest, scale_end ++ scale_begin)]
+    [tone | do_scale(rest, scale_end ++ scale_begin)]
   end
 end
